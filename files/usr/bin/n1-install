@@ -74,8 +74,10 @@ echo " mount bootfs..."
 mount -t vfat $part_boot $ins_boot
 rm -rf $ins_boot/*
 
+block mount
+
 echo " copy bootable file..."
-grep -q '/boot' /proc/mounts || mount -t vfat ${dev_sd}1 /boot
+# grep -q '/boot' /proc/mounts || mount -t vfat ${dev_sd}1 /boot
 rm -rf /boot/'System Volume Information'
 cp -r /boot/* $ins_boot
 sync
@@ -139,6 +141,7 @@ fi
 
 rm -f usr/bin/n1-install
 
+echo " sync..."
 cd /
 sync
 
