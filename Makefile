@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=install-program
-PKG_VERSION:=0.3
-PKG_RELEASE:=20200624
+PKG_VERSION:=0.4
+PKG_RELEASE:=20200708
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -30,8 +30,8 @@ endef
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin/
 	$(INSTALL_DIR) $(1)/etc/config/
-	$(INSTALL_BIN) ./files/usr/bin/n1-install $(1)/usr/bin/
-	$(INSTALL_CONF) ./files/etc/config/fstab $(1)/etc/config/
+	$(INSTALL_BIN) ./files/n1-install $(1)/usr/bin/
+	$(INSTALL_CONF) ./files/fstab $(1)/etc/config/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
