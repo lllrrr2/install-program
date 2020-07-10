@@ -71,8 +71,7 @@ mount -t vfat $part_boot $ins_boot
 rm -rf $ins_boot/*
 
 echo " copy bootable file..."
-lsblk | grep -q '/boot' || mount -t vfat ${dev_sd}1 /boot
-# mount -t vfat -o remount ${dev_sd}1 /boot
+mount -t vfat ${dev_sd}1 /boot 2>/dev/null
 rm -rf /boot/'System Volume Information'
 cp -r /boot/* $ins_boot
 sync
