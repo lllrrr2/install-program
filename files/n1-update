@@ -59,7 +59,7 @@ else
     sed -i 's/ROOTFS/ROOT_EMMC/' $fstab
 fi
 
-cat >${mnt_loop}p2/etc/init.d/resizefs <<EOF
+cat >${mnt_loop}p2/etc/init.d/resizefs <<-EOF
 #!/bin/sh /etc/rc.common
 
 START=99
@@ -96,7 +96,7 @@ echo -e "
 )
 
 echo "upgrading boot..."
-grep -w -q '/boot' /proc/mounts | grep $dev_emmc || {
+grep -w '/boot' /proc/mounts | grep $dev_emmc || {
     umount -f /boot 2>/dev/null
     mount -t vfat ${dev_emmc}p1 /boot
 }
@@ -106,13 +106,12 @@ boottgz="${mnt_loop}p1/boot.tar.gz"
 pv -rpt $boottgz | (
     cd /boot
     tar -xzf -
-    rm -f $boottgz
 )
 echo ""
 
 echo "upgrading rootfs..."
-echo 1 >/proc/sys/kernel/sysrq
-echo u >/proc/sysrq-trigger || umount /
+echo '1' >/proc/sys/kernel/sysrq
+echo 'u' >/proc/sysrq-trigger || umount /
 pv -rpt ${loop}p2 | dd of=${dev_emmc}p2 conv=sync 2>/dev/null
 echo ""
 
