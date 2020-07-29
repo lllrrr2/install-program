@@ -4,4 +4,4 @@ Install to emmc script for phicomm n1, which will help you to copy openwrt syste
 
 Run:  
 `n1-install` for install to emmc  
-`n1-update` for upgrade form `/tmp/upgrade/xxx.img`
+`n1-update` for upgrade form `/tmp/upgrade/xxx.img` ( upload by yourself )
