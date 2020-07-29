@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=install-program
-PKG_VERSION:=0.7
-PKG_RELEASE:=20200728
+PKG_VERSION:=0.8
+PKG_RELEASE:=20200730
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -15,7 +15,6 @@ endef
 
 define Package/$(PKG_NAME)/description
 	Install to emmc script for phicomm n1, which will help you to copy openwrt system to emmc.
-	Execute "n1-install" in terminal to run this program!
 endef
 
 define Build/Prepare
