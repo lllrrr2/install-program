@@ -29,7 +29,7 @@ if grep -q $dev_emmc /proc/mounts; then
 fi
 
 if [ $(blkid | grep -E 'BOOT_EMMC|ROOT_EMMC|DATA' | wc -l) != 3 ]; then
-    parted -v >/dev/null 2>&1 || die "package parted not found!!"
+    # parted -v >/dev/null 2>&1 || die "package parted not found!!"
 
     echo "backup u-boot..."
     dd if=$dev_emmc of=u-boot.img bs=1M count=4 2>/dev/null
@@ -102,40 +102,19 @@ echo "copy rootfs..."
 
 cd /
 echo "  --> copy bin..."
-tar -cf - bin | (
-    cd $ins_root
-    tar -xpf -
-)
+tar -cf - bin | (cd $ins_root; tar -xpf -)
 echo "  --> copy etc..."
-tar -cf - etc | (
-    cd $ins_root
-    tar -xpf -
-)
+tar -cf - etc | (cd $ins_root; tar -xpf -)
 echo "  --> copy lib..."
-tar -cf - lib | (
-    cd $ins_root
-    tar -xpf -
-)
+tar -cf - lib | (cd $ins_root; tar -xpf -)
 echo "  --> copy root..."
-tar -cf - root | (
-    cd $ins_root
-    tar -xpf -
-)
+tar -cf - root | (cd $ins_root; tar -xpf -)
 echo "  --> copy sbin..."
-tar -cf - sbin | (
-    cd $ins_root
-    tar -xpf -
-)
+tar -cf - sbin | (cd $ins_root; tar -xpf -)
 echo "  --> copy usr..."
-tar -cf - usr | (
-    cd $ins_root
-    tar -xpf -
-)
+tar -cf - usr | (cd $ins_root; tar -xpf -)
 echo "  --> copy www..."
-tar -cf - www | (
-    cd $ins_root
-    tar -xpf -
-)
+tar -cf - www | (cd $ins_root; tar -xpf -)
 
 [ -f init ] && cp -f init $ins_root
 
