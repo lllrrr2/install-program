@@ -7,8 +7,8 @@ die() {
 emmc=$(lsblk | grep -oE 'mmcblk[0-9]' | sort | uniq)
 dev_emmc="/dev/$emmc"
 
-echo "emmc: $dev_emmc"
-echo ""
+# echo "emmc: $dev_emmc"
+# echo ""
 
 if [ $(blkid | grep -E 'BOOT_EMMC|ROOT_EMMC|DATA' | wc -l) != 3 ]; then
     die "you have never installed a OS to emmc, please boot with usb and run n1-install to install at first!"
@@ -83,16 +83,15 @@ tune2fs -L "ROOT_EMMC" ${loop}p2 >/dev/null
 # losetup -d $loop
 
 echo -e "
-###############################
-          upgrading...
-
-    !!! \033[31mdo not poweroff\033[0m !!!
-###############################
+#############################
+         \033[41m WARNNING \033[0m
+   !!! do not poweroff !!!
+#############################
 "
 
 (
     cd ${mnt_loop}p1
-    tar -czf boot.tar.gz *
+    tar -cf boot.tar *
 )
 
 echo "upgrading boot..."
@@ -102,10 +101,10 @@ grep -w '/boot' /proc/mounts | grep $dev_emmc || {
 }
 rm -rf /boot/*
 # cp -r ${mnt_loop}p1/* /boot && sync
-boottgz="${mnt_loop}p1/boot.tar.gz"
-pv -rpt $boottgz | (
+boottar="${mnt_loop}p1/boot.tar"
+pv -rpt $boottar | (
     cd /boot
-    tar -xzf -
+    tar -xf -
 )
 echo ""
 
