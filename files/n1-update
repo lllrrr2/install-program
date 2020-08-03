@@ -95,7 +95,7 @@ echo -e "
 )
 
 echo "upgrading boot..."
-grep -w '/boot' /proc/mounts | grep $dev_emmc || {
+grep -w '/boot' /proc/mounts | grep -q $dev_emmc || {
     umount -f /boot 2>/dev/null
     mount -t vfat ${dev_emmc}p1 /boot
 }
