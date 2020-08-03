@@ -16,7 +16,7 @@ config 'mount'
 
 config 'mount'
 		option	enabled			'1'
-		option	target			'/'
+		option	target			'/overlay'
 		option	label			'ROOTFS'
 		option	fstype			'ext4'
 		option	enabled_fsck		'1'
