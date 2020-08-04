@@ -56,11 +56,11 @@ if [ $(blkid | grep -E 'BOOT_EMMC|ROOT_EMMC|DATA' | wc -l) != 3 ]; then
 
     echo "format root partiton..."
     mke2fs -t ext4 -F -q -L "ROOT_EMMC" -m 0 $part_root >/dev/null
-    e2fsck -n $part_root
+    e2fsck -n $part_root >/dev/null
 
     echo "format data partiton..."
     mke2fs -t ext4 -F -q -L "DATA" -m 0 $part_data >/dev/null
-    e2fsck -n $part_data
+    e2fsck -n $part_data >/dev/null
 fi
 
 ins_boot="/install/boot"
