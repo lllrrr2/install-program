@@ -76,6 +76,16 @@ chmod +x ${mnt_loop}p2/etc/init.d/resizefs
     ln -s ../init.d/resizefs S99resizefs
 )
 
+macaddr=$(uuidgen | md5sum | sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$/fc:\1:\2:\3:\4:\5/')
+[ $macaddr ] && {
+    (
+        cd ${mnt_loop}p2/lib/firmware/brcm
+        sdio="brcmfmac43455-sdio.phicomm,n1.txt"
+        [ -f $sdio ] || ln -s brcmfmac43455-sdio.txt $sdio
+        sed -i "s/macaddr=b8:27:eb:74:f2:6c/macaddr=$macaddr/" $sdio
+    )
+}
+
 rm -f ${mnt_loop}p2/usr/bin/n1-install
 tune2fs -L "ROOT_EMMC" ${loop}p2 >/dev/null
 

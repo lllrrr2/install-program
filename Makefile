@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=install-program
-PKG_VERSION:=0.8
-PKG_RELEASE:=20200730
+PKG_VERSION:=1.0
+PKG_RELEASE:=20200804
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -10,7 +10,7 @@ define Package/$(PKG_NAME)
 	SECTION:=utils
 	CATEGORY:=Utilities
 	TITLE:=Install to emmc script for phicomm n1
-	DEPENDS:=+block-mount +blkid +parted +dosfstools +e2fsprogs +lsblk +pv +resize2fs +tune2fs +losetup
+	DEPENDS:=+block-mount +blkid +parted +dosfstools +e2fsprogs +lsblk +pv +resize2fs +tune2fs +losetup +uuidgen
 endef
 
 define Package/$(PKG_NAME)/description

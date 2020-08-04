@@ -135,6 +135,16 @@ else
     sed -i 's/ROOTFS/ROOT_EMMC/' etc/config/fstab
 fi
 
+macaddr=$(uuidgen | md5sum | sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$/fc:\1:\2:\3:\4:\5/')
+[ $macaddr ] && {
+    (
+        cd lib/firmware/brcm
+        sdio="brcmfmac43455-sdio.phicomm,n1.txt"
+        [ -f $sdio ] || ln -s brcmfmac43455-sdio.txt $sdio
+        sed -i "s/macaddr=b8:27:eb:74:f2:6c/macaddr=$macaddr/" $sdio
+    )
+}
+
 rm -f usr/bin/n1-install
 
 echo "sync..."
