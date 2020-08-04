@@ -53,8 +53,15 @@ esac
 fstab="${mnt_loop}p2/etc/config/fstab"
 sed -i "s/'BOOT'/'BOOT_EMMC'/" $fstab
 if [ $uuid ]; then
-    sed -i -e '/ROOTFS/ s/label/uuid/' $fstab
-    sed -i "s/ROOTFS/$uuid/" $fstab
+    line=$(($(sed -n '/overlay/=' $fstab) + 1))
+    lblid=$(sed -n "$line p" $fstab | grep 'uuid')
+    if [ $lblid ]; then
+        olduuid=$(echo $lblid | awk '{ print $3 }' | cut -d "'" -f 2)
+        sed -i "s/$olduuid/$uuid/" $fstab
+    else
+        sed -i -e '/ROOTFS/ s/label/uuid/' $fstab
+        sed -i "s/ROOTFS/$uuid/" $fstab  
+    fi
 else
     sed -i 's/ROOTFS/ROOT_EMMC/' $fstab
 fi
