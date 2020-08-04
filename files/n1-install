@@ -10,7 +10,7 @@ sd=$(lsblk | grep -oE 'sd[a-z]' | sort | uniq)
 [ "$emmc" ] || die "no emmc found!!"
 [ "$sd" ] || die "no usb device found!!"
 
-sd=$(lsblk | grep -w '/' | grep -oE 'sd[a-z]')
+sd=$(lsblk | grep -wE '/|/overlay' | grep -oE 'sd[a-z]')
 [ "$sd" ] || die "you are running in emmc mode, please boot system with usb!!"
 
 dev_emmc="/dev/$emmc"
