@@ -21,8 +21,6 @@ loop=$(losetup -P -f --show $image)
 
 mnt_loop="/mnt/$(echo $loop | grep -oE 'loop[0-9]+')"
 uuid=$(blkid ${loop}p2 | awk '{ print $3 }' | cut -d '"' -f 2)
-uenv="${mnt_loop}p1/uEnv.txt"
-fstab="${mnt_loop}p2/etc/config/fstab"
 
 [ -d ${mnt_loop}p1 ] || mkdir -p ${mnt_loop}p1
 [ -d ${mnt_loop}p2 ] || mkdir -p ${mnt_loop}p2
@@ -30,12 +28,12 @@ fstab="${mnt_loop}p2/etc/config/fstab"
 [ $(ls ${mnt_loop}p2 | wc -l) = 0 ] && mount -t ext4 ${loop}p2 ${mnt_loop}p2
 
 if [ $uuid ]; then
-    sed -i "s/LABEL=ROOTFS/UUID=$uuid/" $uenv
+    sed -i "s/LABEL=ROOTFS/UUID=$uuid/" ${mnt_loop}p1/uEnv.txt
 else
-    sed -i 's/ROOTFS/ROOT_EMMC/' $uenv
+    sed -i 's/ROOTFS/ROOT_EMMC/' ${mnt_loop}p1/uEnv.txt
 fi
 
-cp $fstab ${mnt_loop}p2/etc/config/fstab.bak
+cp ${mnt_loop}p2/etc/config/fstab ${mnt_loop}p2/etc/config/fstab.bak
 
 echo && read -p "do you want to save configuration [Y/n]? " yn
 case $yn in
@@ -49,14 +47,14 @@ esac
     tar -xzf $backup -C ${mnt_loop}p2
 }
 
-cp ${mnt_loop}p2/etc/config/fstab.bak $fstab
+cp ${mnt_loop}p2/etc/config/fstab.bak ${mnt_loop}p2/etc/config/fstab
 
-sed -i "s/'BOOT'/'BOOT_EMMC'/" $fstab
+sed -i "s/'BOOT'/'BOOT_EMMC'/" ${mnt_loop}p2/etc/config/fstab
 if [ $uuid ]; then
-    sed -i -e '/ROOTFS/ s/label/uuid/' $fstab
-    sed -i "s/ROOTFS/$uuid/" $fstab
+    sed -i -e '/ROOTFS/ s/label/uuid/' ${mnt_loop}p2/etc/config/fstab
+    sed -i "s/ROOTFS/$uuid/" ${mnt_loop}p2/etc/config/fstab
 else
-    sed -i 's/ROOTFS/ROOT_EMMC/' $fstab
+    sed -i 's/ROOTFS/ROOT_EMMC/' ${mnt_loop}p2/etc/config/fstab
 fi
 
 cat >${mnt_loop}p2/etc/init.d/resizefs <<-EOF
@@ -80,9 +78,8 @@ macaddr=$(uuidgen | md5sum | sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$/fc:\1:\2:
 [ $macaddr ] && {
     (
         cd ${mnt_loop}p2/lib/firmware/brcm
-        sdio="brcmfmac43455-sdio.phicomm,n1.txt"
-        [ -f $sdio ] || ln -s brcmfmac43455-sdio.txt $sdio
-        sed -i "s/macaddr=b8:27:eb:74:f2:6c/macaddr=$macaddr/" $sdio
+        [ -f $sdio ] || ln -s brcmfmac43455-sdio.txt brcmfmac43455-sdio.phicomm,n1.txt
+        sed -i "s/macaddr=b8:27:eb:74:f2:6c/macaddr=$macaddr/" brcmfmac43455-sdio.phicomm,n1.txt
     )
 }
 
@@ -91,7 +88,7 @@ tune2fs -L "ROOT_EMMC" ${loop}p2 >/dev/null
 
 echo -e "
 #############################
-         \033[41m WARNNING \033[0m
+        \033[41m FBI WARNNING \033[0m
    !!! do not poweroff !!!
 #############################
 "
