@@ -17,7 +17,7 @@ image="/tmp/upgrade/*.img"
 echo "start upgrade from $(ls /tmp/upgrade | grep '.img$')..."
 
 loop=$(losetup -P -f --show $image)
-[ $loop ] || die "create loop device failed!!"
+[ "$loop" ] || die "create loop device failed!!"
 
 mnt_loop="/mnt/$(echo $loop | grep -oE 'loop[0-9]+')"
 uuid=$(blkid ${loop}p2 | awk '{ print $3 }' | cut -d '"' -f 2)
@@ -27,7 +27,7 @@ uuid=$(blkid ${loop}p2 | awk '{ print $3 }' | cut -d '"' -f 2)
 [ $(ls ${mnt_loop}p1 | wc -l) = 0 ] && mount -t vfat ${loop}p1 ${mnt_loop}p1
 [ $(ls ${mnt_loop}p2 | wc -l) = 0 ] && mount -t ext4 ${loop}p2 ${mnt_loop}p2
 
-if [ $uuid ]; then
+if [ "$uuid" ]; then
     sed -i "s/LABEL=ROOTFS/UUID=$uuid/" ${mnt_loop}p1/uEnv.txt
 else
     sed -i 's/ROOTFS/ROOT_EMMC/' ${mnt_loop}p1/uEnv.txt
@@ -51,7 +51,7 @@ esac
     cd ${mnt_loop}p2/etc/config
     cp fstab.bak fstab
     sed -i "s/'BOOT'/'BOOT_EMMC'/" fstab
-    if [ $uuid ]; then
+    if [ "$uuid" ]; then
         sed -i -e '/ROOTFS/ s/label/uuid/' fstab
         sed -i "s/ROOTFS/$uuid/" fstab
     else
@@ -77,7 +77,7 @@ chmod +x ${mnt_loop}p2/etc/init.d/resizefs
 )
 
 macaddr=$(uuidgen | md5sum | sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$/fc:\1:\2:\3:\4:\5/')
-[ $macaddr ] && {
+[ "$macaddr" ] && {
     (
         cd ${mnt_loop}p2/lib/firmware/brcm
         sdio="brcmfmac43455-sdio.phicomm,n1.txt"
