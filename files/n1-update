@@ -33,13 +33,13 @@ uuid=$(blkid ${loop}p2 | awk '{ print $3 }' | cut -d '"' -f 2)
 uenv="${mnt_loop}p1/uEnv.txt"
 fstab="${mnt_loop}p2/etc/config/fstab"
 
-cp $fstab ${mnt_loop}p2/etc/config/fstab.bak
-
 if [ $uuid ]; then
     sed -i "s/LABEL=ROOTFS/UUID=$uuid/" $uenv
 else
     sed -i 's/ROOTFS/ROOT_EMMC/' $uenv
 fi
+
+cp $fstab ${mnt_loop}p2/etc/config/fstab.bak
 
 echo && read -p "do you want to save configuration [Y/n]? " yn
 case $yn in
@@ -92,9 +92,6 @@ macaddr=$(uuidgen | md5sum | sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$/fc:\1:\2:
 
 rm -f ${mnt_loop}p2/usr/bin/n1-install
 tune2fs -L "ROOT_EMMC" ${loop}p2 >/dev/null
-
-# umount -f ${loop}p*
-# losetup -d $loop
 
 echo -e "
 #############################
