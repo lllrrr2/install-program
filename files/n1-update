@@ -31,6 +31,9 @@ mnt_loop="/mnt/$(echo $loop | grep -oE 'loop[0-9]+')"
 
 uuid=$(blkid ${loop}p2 | awk '{ print $3 }' | cut -d '"' -f 2)
 uenv="${mnt_loop}p1/uEnv.txt"
+fstab="${mnt_loop}p2/etc/config/fstab"
+
+cp $fstab ${mnt_loop}p2/etc/config/fstab.bak
 
 if [ $uuid ]; then
     sed -i "s/LABEL=ROOTFS/UUID=$uuid/" $uenv
@@ -50,18 +53,12 @@ esac
     tar -xzf $backup -C ${mnt_loop}p2
 }
 
-fstab="${mnt_loop}p2/etc/config/fstab"
+cp ${mnt_loop}p2/etc/config/fstab.bak $fstab
+
 sed -i "s/'BOOT'/'BOOT_EMMC'/" $fstab
 if [ $uuid ]; then
-    line=$(($(sed -n '/overlay/=' $fstab) + 1))
-    lblid=$(sed -n "$line p" $fstab | grep 'uuid')
-    if [ $lblid ]; then
-        olduuid=$(echo $lblid | awk '{ print $3 }' | cut -d "'" -f 2)
-        sed -i "s/$olduuid/$uuid/" $fstab
-    else
-        sed -i -e '/ROOTFS/ s/label/uuid/' $fstab
-        sed -i "s/ROOTFS/$uuid/" $fstab  
-    fi
+    sed -i -e '/ROOTFS/ s/label/uuid/' $fstab
+    sed -i "s/ROOTFS/$uuid/" $fstab
 else
     sed -i 's/ROOTFS/ROOT_EMMC/' $fstab
 fi
