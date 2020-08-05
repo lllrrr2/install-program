@@ -24,7 +24,7 @@ part_root="${dev_emmc}p2"
 part_data="${dev_emmc}p3"
 
 if grep -q $dev_emmc /proc/mounts; then
-    echo "umount emmc..."
+    # echo "umount emmc..."
     umount -f ${dev_emmc}p* 2>/dev/null
 fi
 
@@ -68,7 +68,7 @@ ins_root="/install/root"
 
 mkdir -p -m 777 $ins_boot $ins_root
 
-echo "mount bootfs..."
+# echo "mount bootfs..."
 mount -t vfat $part_boot $ins_boot
 rm -rf $ins_boot/*
 
@@ -91,10 +91,10 @@ rm -f $ins_boot/aml*
 rm -f $ins_boot/boot.ini
 mv -f $ins_boot/boot-emmc.scr $ins_boot/boot.scr
 
-echo "umount bootfs..."
+# echo "umount bootfs..."
 umount -f $part_boot
 
-echo "mount rootfs..."
+# echo "mount rootfs..."
 mount -t ext4 $part_root $ins_root
 rm -rf $ins_root/*
 
@@ -126,6 +126,27 @@ ln -sf lib lib64
 echo "  --> link var..."
 ln -sf tmp var
 
+cp etc/config/fstab etc/config/fstab.bak
+
+backups=$(ls /opt | grep 'backup-OpenWrt')
+[ "$backups" ] && {
+    for x in $backups; do backtgz=$x; done
+    echo && read -p "found latest configuration backups: $backtgz, 
+do you want to restore it? [Y/n] " yn
+    case $yn in
+    n | N) yn='n' ;;
+    *) yn='y' ;;
+    esac
+    [ "$yn" = "y" ] && {
+        echo "restore backups..."
+        backtgz="/opt/$backtgz"
+        tar -xzf $backtgz
+    }
+    echo ""
+}
+
+cp etc/config/fstab.bak etc/config/fstab
+
 echo "edit fstab..."
 sed -i "s/'BOOT'/'BOOT_EMMC'/" etc/config/fstab
 if [ $uuid ]; then
@@ -151,7 +172,7 @@ echo "sync..."
 cd /
 sync
 
-echo "umount rootfs..."
+# echo "umount rootfs..."
 umount -f $part_root
 
 rm -rf install
