@@ -80,7 +80,7 @@ sync
 
 echo "edit uEnv..."
 uuid=$(blkid $(blkid -L "ROOT_EMMC") | awk '{ print $3 }' | cut -d '"' -f 2)
-if [ $uuid ]; then
+if [ "$uuid" ]; then
     sed -i "s/LABEL=ROOTFS/UUID=$uuid/" $ins_boot/uEnv.txt
 else
     sed -i 's/ROOTFS/ROOT_EMMC/' $ins_boot/uEnv.txt
@@ -149,7 +149,7 @@ cp etc/config/fstab.bak etc/config/fstab
 
 echo "edit fstab..."
 sed -i "s/'BOOT'/'BOOT_EMMC'/" etc/config/fstab
-if [ $uuid ]; then
+if [ "$uuid" ]; then
     sed -i -e '/ROOTFS/ s/label/uuid/' etc/config/fstab
     sed -i "s/ROOTFS/$uuid/" etc/config/fstab
 else
@@ -157,7 +157,7 @@ else
 fi
 
 macaddr=$(uuidgen | md5sum | sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$/fc:\1:\2:\3:\4:\5/')
-[ $macaddr ] && {
+[ "$macaddr" ] && {
     (
         cd lib/firmware/brcm
         sdio="brcmfmac43455-sdio.phicomm,n1.txt"
