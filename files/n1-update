@@ -24,7 +24,10 @@ uuid=$(blkid ${loop}p2 | awk '{ print $3 }' | cut -d '"' -f 2)
 uenv="${mnt_loop}p1/uEnv.txt"
 fstab="${mnt_loop}p2/etc/config/fstab"
 
-sleep 1s
+[ -d ${mnt_loop}p1 ] || mkdir -p ${mnt_loop}p1
+[ -d ${mnt_loop}p2 ] || mkdir -p ${mnt_loop}p2
+[ $(ls ${mnt_loop}p1 | wc -l) = 0 ] && mount -t vfat ${loop}p1 ${mnt_loop}p1
+[ $(ls ${mnt_loop}p2 | wc -l) = 0 ] && mount -t ext4 ${loop}p2 ${mnt_loop}p2
 
 if [ $uuid ]; then
     sed -i "s/LABEL=ROOTFS/UUID=$uuid/" $uenv
@@ -112,7 +115,7 @@ pv -rpt $boottar | (
 echo ""
 
 echo "upgrading rootfs..."
-pv -rpt ${loop}p2 | dd of=${dev_emmc}p2 conv=sync 2>/dev/null
+pv -rpt ${loop}p2 | dd of=${dev_emmc}p2 conv=fsync 2>/dev/null
 echo ""
 
 echo "done, will reboot your device now!"
