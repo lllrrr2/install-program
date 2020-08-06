@@ -16,8 +16,7 @@ sd=$(lsblk | grep -wE '/|/overlay' | grep -oE 'sd[a-z]')
 dev_emmc="/dev/$emmc"
 dev_sd="/dev/$sd"
 
-echo "emmc: $dev_emmc"
-echo "usb:  $dev_sd"
+echo -e "emmc: $dev_emmc\nusb:  $dev_sd\n"
 
 part_boot="${dev_emmc}p1"
 part_root="${dev_emmc}p2"
@@ -73,13 +72,13 @@ mount -t vfat $part_boot $ins_boot
 rm -rf $ins_boot/*
 
 echo "copy bootable file..."
-grep -w -q '/boot' /proc/mounts || mount -t vfat ${dev_sd}1 /boot
+grep -wq '/boot' /proc/mounts || mount -t vfat ${dev_sd}1 /boot
 rm -rf /boot/'System Volume Information'
 cp -r /boot/* $ins_boot
 sync
 
 echo "edit uEnv..."
-uuid=$(blkid $(blkid -L "ROOT_EMMC") | awk '{ print $3 }' | cut -d '"' -f 2)
+uuid=$(blkid ${dev_emmc}p2 | awk '{ print $3 }' | cut -d '"' -f 2)
 if [ "$uuid" ]; then
     sed -i "s/LABEL=ROOTFS/UUID=$uuid/" $ins_boot/uEnv.txt
 else
@@ -101,19 +100,19 @@ rm -rf $ins_root/*
 echo "copy rootfs..."
 
 cd /
-echo "  --> copy bin..."
+echo " --> copy bin..."
 tar -cf - bin | (cd $ins_root; tar -xpf -)
-echo "  --> copy etc..."
+echo " --> copy etc..."
 tar -cf - etc | (cd $ins_root; tar -xpf -)
-echo "  --> copy lib..."
+echo " --> copy lib..."
 tar -cf - lib | (cd $ins_root; tar -xpf -)
-echo "  --> copy root..."
+echo " --> copy root..."
 tar -cf - root | (cd $ins_root; tar -xpf -)
-echo "  --> copy sbin..."
+echo " --> copy sbin..."
 tar -cf - sbin | (cd $ins_root; tar -xpf -)
-echo "  --> copy usr..."
+echo " --> copy usr..."
 tar -cf - usr | (cd $ins_root; tar -xpf -)
-echo "  --> copy www..."
+echo " --> copy www..."
 tar -cf - www | (cd $ins_root; tar -xpf -)
 
 [ -f init ] && cp -f init $ins_root
@@ -121,14 +120,14 @@ tar -cf - www | (cd $ins_root; tar -xpf -)
 cd $ins_root
 mkdir boot dev mnt opt overlay proc rom run sys tmp
 
-echo "  --> link lib64..."
+echo " --> link lib64..."
 ln -sf lib lib64
-echo "  --> link var..."
+echo " --> link var..."
 ln -sf tmp var
 
 cp etc/config/fstab etc/config/fstab.bak
 
-backups=$(ls /opt | grep 'backup-OpenWrt')
+backups=$(ls /opt | grep 'backup-OpenWrt.*.tar.gz$')
 [ "$backups" ] && {
     for x in $backups; do backtgz=$x; done
     echo && read -p "found latest configuration backups: $backtgz, 
