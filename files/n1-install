@@ -1,7 +1,7 @@
 #!/bin/sh
 
 die() {
-    echo -e "\033[31mError:\033[0m $1" && exit 1
+    echo -e "\033[1;31mError:\033[0m $1" && exit 1
 }
 
 emmc=$(lsblk | grep -oE 'mmcblk[0-9]' | sort | uniq)
