@@ -1,7 +1,7 @@
 #!/bin/sh
 
 die() {
-    echo -e "\033[31mError:\033[0m $1" && exit 1
+    echo -e "\033[1;31mError:\033[0m $1" && exit 1
 }
 
 emmc=$(lsblk | grep -oE 'mmcblk[0-9]' | sort | uniq)
@@ -12,7 +12,7 @@ if [ $(blkid | grep -E 'BOOT_EMMC|ROOT_EMMC|DATA' | wc -l) != 3 ]; then
 fi
 
 image="/tmp/upgrade/*.img"
-[ -f $image ] || die "no upgrade image in /tmp/upgrade!!"
+[ -f $image ] || die "no upgrade image found in /tmp/upgrade!!"
 
 echo "start upgrade from $(ls /tmp/upgrade | grep '.img$')..."
 
@@ -35,7 +35,7 @@ fi
 
 cp ${mnt_loop}p2/etc/config/fstab ${mnt_loop}p2/etc/config/fstab.bak
 
-echo && read -p "do you want to save configuration [Y/n]? " yn
+echo && read -p "do you want to save configuration? [Y/n] " yn
 case $yn in
 n | N) yn='n' ;;
 *) yn='y' ;;
@@ -90,10 +90,10 @@ rm -f ${mnt_loop}p2/usr/bin/n1-install
 tune2fs -L "ROOT_EMMC" ${loop}p2 >/dev/null
 
 echo -e "
-#############################
-        \033[41m FBI WARNNING \033[0m
-   !!! do not poweroff !!!
-#############################
+----------------------------
+       \033[41m FBI WARNNING \033[0m
+  !!! do not power off !!!
+----------------------------
 "
 
 (
