@@ -4,6 +4,9 @@ die() {
     echo -e "\033[1;31mError:\033[0m $1" && exit 1
 }
 
+model=$(cat /tmp/sysinfo/model)
+[ "$model" = "Phicomm N1" ] || die "this script if for Phicomm N1, your device is ${model}!!"
+
 emmc=$(lsblk | grep -oE 'mmcblk[0-9]' | sort | uniq)
 dev_emmc="/dev/$emmc"
 
