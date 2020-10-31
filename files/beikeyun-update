@@ -9,7 +9,7 @@ emmc=$(lsblk | grep -oE 'mmcblk[0-9]' | sort | uniq)
 dev_emmc="/dev/$emmc"
 
 image="$1"
-[ "$1" ] || die "please input firmware path!"
+[ "$image" ] || die "please input firmware path!"
 [ -f $image ] || die "$image does not exist!"
 ls $image | grep -q ".img$" || die "invalid firmware $image!"
 
@@ -22,6 +22,8 @@ mnt_loop="/mnt/$(echo $loop | grep -oE 'loop[0-9]+')"
 [ -d ${mnt_loop}p2 ] || mkdir -p ${mnt_loop}p2
 # [ $(ls ${mnt_loop}p1 | wc -l) = 0 ] && mount -t ext4 ${loop}p1 ${mnt_loop}p1
 [ $(ls ${mnt_loop}p2 | wc -l) = 0 ] && mount -t ext4 ${loop}p2 ${mnt_loop}p2
+
+sed -i 's/vfat/ext4/' ${mnt_loop}p2/etc/config/fstab
 
 echo && read -p "do you want to save configuration? [Y/n] " yn
 case $yn in
