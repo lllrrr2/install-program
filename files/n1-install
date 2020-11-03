@@ -99,7 +99,7 @@ cd /
 sys="bin etc lib root sbin usr www"
 for x in $sys; do
     echo " --> copy $x..."
-    tar -cf - $x | (cd $x; tar -xpf -)
+    cp -r $x $ins_root
 done
 
 [ -f init ] && cp -f init $ins_root
